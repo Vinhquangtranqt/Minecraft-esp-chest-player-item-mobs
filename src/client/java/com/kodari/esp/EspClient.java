@@ -21,12 +21,14 @@ public final class EspClient implements ClientModInitializer {
 
     static boolean enabled = true;
     static boolean chestsEnabled = true;
-    static boolean entitiesEnabled = true;
+    static boolean mobsEnabled = true;
+    static boolean itemsEnabled = true;
     static boolean playersEnabled = true;
     static DisplayMode displayMode = DisplayMode.BOX;
 
     @Override
     public void onInitializeClient() {
+        EspConfig.load();
         EspRenderer.initialize();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -50,9 +52,13 @@ public final class EspClient implements ClientModInitializer {
                 chestsEnabled = !chestsEnabled;
                 sendToggle(source, "chest", chestsEnabled);
             }
-            case "entity" -> {
-                entitiesEnabled = !entitiesEnabled;
-                sendToggle(source, "entity", entitiesEnabled);
+            case "mob", "entity" -> {
+                mobsEnabled = !mobsEnabled;
+                sendToggle(source, "mob", mobsEnabled);
+            }
+            case "item" -> {
+                itemsEnabled = !itemsEnabled;
+                sendToggle(source, "item", itemsEnabled);
             }
             case "player" -> {
                 playersEnabled = !playersEnabled;

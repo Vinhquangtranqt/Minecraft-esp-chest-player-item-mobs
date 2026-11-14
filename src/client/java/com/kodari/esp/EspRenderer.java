@@ -20,6 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
@@ -39,6 +40,7 @@ final class EspRenderer {
     private static final Color HOSTILE_COLOR = new Color(255, 55, 55);
     private static final Color FRIENDLY_COLOR = new Color(55, 235, 90);
     private static final Color PLAYER_COLOR = new Color(65, 135, 255);
+    private static final Color ITEM_COLOR = new Color(255, 220, 75);
     private static final int[][] EDGES = {
             {0, 1}, {2, 3}, {4, 5}, {6, 7},
             {0, 2}, {1, 3}, {4, 6}, {5, 7},
@@ -127,7 +129,12 @@ final class EspRenderer {
                 continue;
             }
 
-            if (!EspClient.entitiesEnabled) {
+            if (EspClient.itemsEnabled && entity instanceof ItemEntity) {
+                extracted.add(target(entity.getBoundingBox(), ITEM_COLOR));
+                continue;
+            }
+
+            if (!EspClient.mobsEnabled) {
                 continue;
             }
 
@@ -160,17 +167,17 @@ final class EspRenderer {
         for (Target target : frameTargets) {
             switch (mode) {
                 case BOX -> collector.submitCustomGeometry(poseStack, lineRenderType,
-                        (pose, buffer) -> drawBox(pose, buffer, target));
+                        (pose, buffer) -> drawBox(pose, buffer, target, camera));
                 case HIGHLIGHT -> collector.submitCustomGeometry(poseStack, fillRenderType,
-                        (pose, buffer) -> drawHighlight(pose, buffer, target));
+                        (pose, buffer) -> drawHighlight(pose, buffer, target, camera));
                 case TRACER -> collector.submitCustomGeometry(poseStack, lineRenderType,
                         (pose, buffer) -> drawTracer(pose, buffer, target, camera));
             }
         }
     }
 
-    private static void drawBox(PoseStack.Pose pose, VertexConsumer buffer, Target target) {
-        float[][] corners = corners(target);
+    private static void drawBox(PoseStack.Pose pose, VertexConsumer buffer, Target target, Point camera) {
+        float[][] corners = corners(target, camera);
         for (int[] edge : EDGES) {
             lineVertex(pose, buffer, corners[edge[0]], target.color);
             lineVertex(pose, buffer, corners[edge[1]], target.color);
@@ -178,15 +185,15 @@ final class EspRenderer {
     }
 
     private static void drawTracer(PoseStack.Pose pose, VertexConsumer buffer, Target target, Point camera) {
-        double targetX = (target.minX + target.maxX) * 0.5;
-        double targetY = (target.minY + target.maxY) * 0.5;
-        double targetZ = (target.minZ + target.maxZ) * 0.5;
-        lineVertex(pose, buffer, new double[]{camera.x, camera.y, camera.z}, target.color);
+        double targetX = (target.minX + target.maxX) * 0.5 - camera.x;
+        double targetY = (target.minY + target.maxY) * 0.5 - camera.y;
+        double targetZ = (target.minZ + target.maxZ) * 0.5 - camera.z;
+        lineVertex(pose, buffer, new double[]{0.0, 0.0, 0.0}, target.color);
         lineVertex(pose, buffer, new double[]{targetX, targetY, targetZ}, target.color);
     }
 
-    private static void drawHighlight(PoseStack.Pose pose, VertexConsumer buffer, Target target) {
-        float[][] corners = corners(target);
+    private static void drawHighlight(PoseStack.Pose pose, VertexConsumer buffer, Target target, Point camera) {
+        float[][] corners = corners(target, camera);
         Color color = target.color;
         for (int[] face : FACES) {
             for (int index : face) {
@@ -211,16 +218,16 @@ final class EspRenderer {
                 .setLineWidth(2.0F);
     }
 
-    private static float[][] corners(Target target) {
+    private static float[][] corners(Target target, Point camera) {
         return new float[][]{
-                {(float) target.minX, (float) target.minY, (float) target.minZ},
-                {(float) target.maxX, (float) target.minY, (float) target.minZ},
-                {(float) target.minX, (float) target.maxY, (float) target.minZ},
-                {(float) target.maxX, (float) target.maxY, (float) target.minZ},
-                {(float) target.minX, (float) target.minY, (float) target.maxZ},
-                {(float) target.maxX, (float) target.minY, (float) target.maxZ},
-                {(float) target.minX, (float) target.maxY, (float) target.maxZ},
-                {(float) target.maxX, (float) target.maxY, (float) target.maxZ}
+                {(float) (target.minX - camera.x), (float) (target.minY - camera.y), (float) (target.minZ - camera.z)},
+                {(float) (target.maxX - camera.x), (float) (target.minY - camera.y), (float) (target.minZ - camera.z)},
+                {(float) (target.minX - camera.x), (float) (target.maxY - camera.y), (float) (target.minZ - camera.z)},
+                {(float) (target.maxX - camera.x), (float) (target.maxY - camera.y), (float) (target.minZ - camera.z)},
+                {(float) (target.minX - camera.x), (float) (target.minY - camera.y), (float) (target.maxZ - camera.z)},
+                {(float) (target.maxX - camera.x), (float) (target.minY - camera.y), (float) (target.maxZ - camera.z)},
+                {(float) (target.minX - camera.x), (float) (target.maxY - camera.y), (float) (target.maxZ - camera.z)},
+                {(float) (target.maxX - camera.x), (float) (target.maxY - camera.y), (float) (target.maxZ - camera.z)}
         };
     }
 
