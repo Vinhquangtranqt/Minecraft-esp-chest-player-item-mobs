@@ -1,0 +1,16 @@
+{
+  "key.esp.toggle": "Toggle all ESP",
+  "esp.feedback.enabled": "ESP enabled",
+  "esp.feedback.disabled": "ESP disabled",
+  "esp.feedback.toggle": "%1$s: %2$s",
+  "esp.feedback.mode": "ESP display mode: %1$s",
+  "esp.feedback.unknown": "Unknown ESP feature: %1$s",
+  "esp.feature.chest": "Chest ESP",
+  "esp.feature.entity": "Entity ESP",
+  "esp.feature.player": "Player ESP",
+  "esp.state.enabled": "enabled",
+  "esp.state.disabled": "disabled",
+  "esp.mode.box": "Box",
+  "esp.mode.highlight": "Highlight",
+  "esp.mode.tracer": "Tracer"
+}

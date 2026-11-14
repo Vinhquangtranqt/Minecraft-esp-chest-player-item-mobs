@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "esp",
+  "version": "${version}",
+  "name": "Through-Wall ESP",
+  "description": "Client-side ESP overlays for chests, entities and other players.",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.kodari.esp.EspClient"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "esp.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
