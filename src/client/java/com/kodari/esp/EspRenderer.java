@@ -2,6 +2,7 @@ package com.kodari.esp;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionEvents;
@@ -16,6 +17,7 @@ import net.minecraft.client.renderer.blockentity.state.ChestRenderState;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.Monster;
@@ -57,11 +59,12 @@ final class EspRenderer {
 
     static void initialize() {
         RenderPipeline fillPipeline = RenderPipeline.builder(RenderPipelinesAccessor.esp$getDebugFilledSnippet())
-                .withLocation("esp:through_wall_filled")
+                .withLocation(Identifier.fromNamespaceAndPath("esp", "through_wall_filled"))
                 .withDepthStencilState(Optional.empty())
                 .build();
         RenderPipeline linePipeline = RenderPipeline.builder(RenderPipelinesAccessor.esp$getLinesSnippet())
-                .withLocation("esp:through_wall_lines")
+                .withLocation(Identifier.fromNamespaceAndPath("esp", "through_wall_lines"))
+                .withColorTargetState(ColorTargetState.DEFAULT)
                 .withDepthStencilState(Optional.empty())
                 .build();
 
